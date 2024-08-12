@@ -1,9 +1,12 @@
+<!-- frontend/src/routes/+page.svelte -->
+
 <script>
 	let message = 'Loading...';
 
 	async function fetchMessage() {
 		try {
-			const response = await fetch('http://localhost:5000/api/message');
+			// import.meta.env로 환경 변수를 가져옵니다.
+			const response = await fetch(`${import.meta.env.VITE_API_URL}/api/message`);
 			const data = await response.json();
 			message = data.message;
 		} catch (error) {
