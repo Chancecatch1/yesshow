@@ -9,6 +9,7 @@
 	}
 
 	let message: string = '';
+	let flaskMessage: string = '';
 
 	onMount(async () => {
 		const response = await fetch('/api/posts');
@@ -16,6 +17,19 @@
 			message = await response.text();
 		} else {
 			message = 'Failed to load data';
+		}
+
+		// Flask 백엔드에서 메시지 가져오기
+		try {
+			const flaskResponse = await fetch('/api/message');
+			if (flaskResponse.ok) {
+				const data = await flaskResponse.json();
+				flaskMessage = data.message;
+			} else {
+				flaskMessage = 'Failed to load Flask message';
+			}
+		} catch (error) {
+			flaskMessage = 'Error: ' + error.message;
 		}
 	});
 </script>
@@ -100,5 +114,10 @@
 				</div>
 			</div>
 		{/if}
+	</div>
+	<!-- Flask 백엔드 메시지 표시 -->
+	<div class="mt-8">
+		<h2 class="text-xl font-semibold mb-2">Message from Flask Backend:</h2>
+		<p class="text-lg text-gray-700">{flaskMessage}</p>
 	</div>
 </main>

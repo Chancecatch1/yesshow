@@ -12,11 +12,17 @@
 		Copyrighted © 2024 MyungJun Lee
 	</div>
 	<div class="w-full mx-auto top-[200px] absolute flex justify-center space-x-8">
-		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">Home</div>
-		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">About</div>
-		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">Services</div>
-		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">Get in touch</div>
-		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">FAQs</div>
+		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">
+			<a href="/">Home</a>
+		</div>
+		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">
+			<a href="/about">About</a>
+		</div>
+		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">
+			<a href="/service">Service</a>
+		</div>
+		<!-- <div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">Get in touch</div>
+		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">FAQs</div> -->
 	</div>
 	<div
 		class="w-[calc(100%-168px)] h-[1px] left-[84px] top-[260px] absolute border border-[#dfdfdf]"
