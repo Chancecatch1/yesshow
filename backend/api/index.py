@@ -1,8 +1,5 @@
-# backend/api/index.py
-
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-# from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pandas as pd
 import joblib
@@ -10,27 +7,8 @@ import os
 
 app = Flask(__name__)
 CORS(app)  # 모든 도메인에서 접근 가능하게 설정
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-# db = SQLAlchemy(app)
 
-# class Prediction(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     performanceCode = db.Column(db.String(50))
-#     seatCount = db.Column(db.Integer)
-#     eventCode = db.Column(db.String(50))
-#     eventDate = db.Column(db.String(50))
-#     discountAmount = db.Column(db.Float)
-#     pricePerTicket = db.Column(db.Float)
-#     gender = db.Column(db.String(10))
-#     age = db.Column(db.Integer)
-#     genre = db.Column(db.String(50))
-
-# # 메시지 반환 엔드포인트
-# @app.route('/api/message', methods=['GET'])
-# def get_message():
-#     current_date = datetime.now().strftime('%Y-%m-%d')  # 현재 날짜를 YYYY-MM-DD 형식으로 가져옴
-#     return jsonify({"message": f"{current_date}"})
-
+# 모델 경로 설정
 model_path = os.path.join(os.path.dirname(__file__), 'models/xgb_model.joblib')
 mms_path = os.path.join(os.path.dirname(__file__), 'models/mms.joblib')
 model = joblib.load(model_path)
@@ -70,6 +48,7 @@ def predict():
 
     return jsonify({"predictedCancellationCount": predicted_count})
 
+# 정적 파일(이미지) 제공 엔드포인트
 @app.route('/static/images/<filename>')
 def get_image(filename):
     print(f"Request for image: {filename}")
@@ -77,6 +56,4 @@ def get_image(filename):
     return send_from_directory(directory, filename)
 
 if __name__ == '__main__':
-    # with app.app_context():
-    #     db.create_all() 
     app.run(debug=True)
