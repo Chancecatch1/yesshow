@@ -3,6 +3,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+
+	const API_URL = import.meta.env.VITE_API_URL;
+
 	let isOpen = writable(false);
 	function toggleMenu() {
 		isOpen.update((n) => !n);
@@ -31,16 +34,16 @@
 	let age = ''; // 연령
 	// 추론된 취소수 값을 저장할 스토어
 	let predictedCancellationCount = writable<number | null>(null);
-	let flaskMessage: string = ''; // Flask로부터의 메시지 (오류 시 표시)
-	let message: string = '';
+	// let flaskMessage: string = ''; // Flask로부터의 메시지 (오류 시 표시)
+	// let message: string = '';
 
 	let predictedCount: number | null;
 	$: predictedCount = $predictedCancellationCount;
 
 	let eventImages = {
-		PF343804: 'http://localhost:5000/static/images/PF343804.jpeg',
-		SomeEventCode2: 'http://localhost:5000/static/images/SomeImage2.jpeg',
-		SomeEventCode3: 'http://localhost:5000/static/images/SomeImage3.jpeg'
+		PF343804: `${API_URL}/static/images/PF343804.jpeg`,
+		SomeEventCode2: `${API_URL}/static/images/SomeImage2.jpeg`,
+		SomeEventCode3: `${API_URL}/static/images/SomeImage3.jpeg`
 	};
 
 	let selectedImageUrl: string | null = null;
@@ -50,7 +53,7 @@
 	// Flask 백엔드에서 메시지 가져오기
 	onMount(async () => {
 		try {
-			const flaskResponse = await fetch('http://localhost:5000/api/message');
+			const flaskResponse = await fetch(`${API_URL}/message`);
 			if (flaskResponse.ok) {
 				const data = await flaskResponse.json();
 				flaskMessage = data.message;
@@ -78,7 +81,7 @@
 
 		try {
 			// Flask 백엔드로 POST 요청을 보냄
-			const response = await fetch('http://localhost:5000/api/predict', {
+			const response = await fetch(`${API_URL}/predict`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
