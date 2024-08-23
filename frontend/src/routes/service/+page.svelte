@@ -40,10 +40,16 @@
 	let predictedCount: number | null;
 	$: predictedCount = $predictedCancellationCount;
 
+	// let eventImages = {
+	// 	PF343804: `${API_URL.replace('/api', '')}/static/images/PF343804.jpeg`,
+	// 	SomeEventCode2: `${API_URL.replace('/api', '')}/static/images/SomeImage2.jpeg`,
+	// 	SomeEventCode3: `${API_URL.replace('/api', '')}/static/images/SomeImage3.jpeg`
+	// };
+
 	let eventImages = {
-		PF343804: `${API_URL.replace('/api', '')}/static/images/PF343804.jpeg`,
-		SomeEventCode2: `${API_URL.replace('/api', '')}/static/images/SomeImage2.jpeg`,
-		SomeEventCode3: `${API_URL.replace('/api', '')}/static/images/SomeImage3.jpeg`
+		PF343804: `https://yesshow.vercel.app/static/images/PF343804.jpeg`,
+		SomeEventCode2: `https://yesshow.vercel.app/static/images/SomeImage2.jpeg`,
+		SomeEventCode3: `https://yesshow.vercel.app/static/images/SomeImage3.jpeg`
 	};
 
 	let selectedImageUrl: string | null = null;
@@ -53,7 +59,8 @@
 	// Flask 백엔드에서 메시지 가져오기
 	onMount(async () => {
 		try {
-			const flaskResponse = await fetch(`${API_URL}/message`);
+			// const flaskResponse = await fetch(`${API_URL}/message`);
+			const flaskResponse = await fetch(`https://yesshow.vercel.app/api/message`);
 			if (flaskResponse.ok) {
 				const data = await flaskResponse.json();
 				flaskMessage = data.message;
@@ -81,13 +88,20 @@
 
 		try {
 			// Flask 백엔드로 POST 요청을 보냄
-			const response = await fetch(`${API_URL}/predict`, {
+			const response = await fetch(`https://yesshow.vercel.app/api/predict`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify(data) // 데이터를 JSON 형식으로 변환하여 전송
 			});
+			// const response = await fetch(`${API_URL}/predict`, {
+			// 	method: 'POST',
+			// 	headers: {
+			// 		'Content-Type': 'application/json'
+			// 	},
+			// 	body: JSON.stringify(data) // 데이터를 JSON 형식으로 변환하여 전송
+			// });
 
 			if (response.ok) {
 				// 성공 시, 예측 결과를 JSON으로 받아와 스토어에 저장
