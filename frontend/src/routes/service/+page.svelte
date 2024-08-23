@@ -55,6 +55,7 @@
 	let selectedImageUrl: string | null = null;
 
 	$: selectedImageUrl = eventCode ? eventImages[eventCode] : null;
+	console.log('Selected image URL:', selectedImageUrl);
 
 	// Flask 백엔드에서 메시지 가져오기
 	onMount(async () => {

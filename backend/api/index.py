@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pandas as pd
 import joblib
@@ -72,6 +72,7 @@ def predict():
 
 @app.route('/static/images/<filename>')
 def get_image(filename):
+    print(f"Request for image: {filename}")
     directory = os.path.join(app.root_path, '../static/images')
     return send_from_directory(directory, filename)
 
