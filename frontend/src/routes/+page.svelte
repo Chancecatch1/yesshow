@@ -6,8 +6,8 @@
 	<div
 		class="text-center text-black text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold font-['Nanum Gothic', 'Noto Sans KR', sans-serif] leading-tight mb-4"
 	>
-		<div class="mb-1 sm:mb-2 leading-normal sm:leading-snug">당일 현장</div>
-		<div class="mb-1 sm:mb-2 leading-normal sm:leading-snug">예매 취소표</div>
+		<div class="mb-1 sm:mb-2 leading-normal sm:leading-snug">KOPIS</div>
+		<div class="mb-1 sm:mb-2 leading-normal sm:leading-snug">공연 취소표</div>
 		<div class="text-[#696969] mb-1 sm:mb-2 leading-normal sm:leading-snug">예측</div>
 		<div class="leading-normal sm:leading-snug">서비스</div>
 	</div>

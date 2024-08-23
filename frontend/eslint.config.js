@@ -1,3 +1,5 @@
+// frontend/eslint.config.js
+
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import svelte from 'eslint-plugin-svelte';

@@ -7,117 +7,333 @@
 	function toggleMenu() {
 		isOpen.update((n) => !n);
 	}
+	function handleEventCodeChange(event) {
+		const selectedValue = event.target.value;
 
-	let message: string = '';
-	let flaskMessage: string = '';
-
-	onMount(async () => {
-		const response = await fetch('/api/posts');
-		if (response.ok) {
-			message = await response.text();
-		} else {
-			message = 'Failed to load data';
+		if (selectedValue === 'eventCode1') {
+			eventCode = 'PF343804';
+		} else if (selectedValue === 'eventCode2') {
+			eventCode = 'SomeEventCode2';
+		} else if (selectedValue === 'eventCode3') {
+			eventCode = 'SomeEventCode3';
 		}
+	}
+	// 입력 필드와 연동될 변수들을 선언
+	let eventCode = ''; // 공연코드
+	let eventDate = ''; // 공연일시
+	let discountAmount = ''; // 할인금액
+	let pricePerTicket = ''; // 장당금액
+	let gender = {
+		maleCount: 0,
+		femaleCount: 0,
+		otherCount: 0
+	}; // 성별
+	let age = ''; // 연령
+	// 추론된 취소수 값을 저장할 스토어
+	let predictedCancellationCount = writable<number | null>(null);
+	let flaskMessage: string = ''; // Flask로부터의 메시지 (오류 시 표시)
+	let message: string = '';
 
-		// Flask 백엔드에서 메시지 가져오기
+	let predictedCount: number | null;
+	$: predictedCount = $predictedCancellationCount;
+
+	let eventImages = {
+		PF343804: 'http://localhost:5000/static/images/PF343804.jpeg',
+		SomeEventCode2: 'http://localhost:5000/static/images/SomeImage2.jpeg',
+		SomeEventCode3: 'http://localhost:5000/static/images/SomeImage3.jpeg'
+	};
+
+	let selectedImageUrl: string | null = null;
+
+	$: selectedImageUrl = eventCode ? eventImages[eventCode] : null;
+
+	// Flask 백엔드에서 메시지 가져오기
+	onMount(async () => {
 		try {
-			const flaskResponse = await fetch('/api/message');
+			const flaskResponse = await fetch('http://localhost:5000/api/message');
 			if (flaskResponse.ok) {
 				const data = await flaskResponse.json();
 				flaskMessage = data.message;
 			} else {
-				flaskMessage = 'Failed to load Flask message';
+				flaskMessage = 'Failed to load message';
 			}
 		} catch (error) {
 			flaskMessage = 'Error: ' + error.message;
 		}
 	});
+
+	// 취소수 예측 요청을 보내는 비동기 함수
+	async function predictCancellation() {
+		// 입력된 데이터를 객체로 묶음
+		const data = {
+			eventCode,
+			eventDate,
+			discountAmount,
+			pricePerTicket,
+			gender,
+			age
+		};
+
+		console.log('Sending JSON data:', data); // JSON 데이터 출력
+
+		try {
+			// Flask 백엔드로 POST 요청을 보냄
+			const response = await fetch('http://localhost:5000/api/predict', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data) // 데이터를 JSON 형식으로 변환하여 전송
+			});
+
+			if (response.ok) {
+				// 성공 시, 예측 결과를 JSON으로 받아와 스토어에 저장
+				const result = await response.json();
+				predictedCancellationCount.set(result.predictedCancellationCount);
+			} else {
+				// 요청 실패 시 메시지 업데이트
+				flaskMessage = 'Failed to load prediction';
+			}
+		} catch (error) {
+			// 네트워크 또는 기타 오류 처리
+			flaskMessage = 'Error: ' + error.message;
+		}
+	}
 </script>
 
 <main class="w-full max-w-[850px] mx-auto p-4 relative">
-	<h1 class="text-2xl font-bold mb-4">Service Page</h1>
-	<p class="text-lg text-gray-700">{message}</p>
+	<h1 class="text-2xl font-bold mb-4">Cancel Tickets Prediction</h1>
 
-	<div class="relative inline-block text-left">
-		<!-- 타이틀과 드롭다운을 포함한 상위 요소 -->
+	<div class="mt-8">
+		<h2 class="text-l font-semibold mb-2">공연코드 선택</h2>
 		<div class="flex items-center gap-4">
-			<!-- 타이틀 -->
-			<span class="text-lg font-semibold text-gray-900">Dropdown Title</span>
-
-			<!-- 드롭다운 버튼 -->
-			<div>
-				<button
-					on:click={toggleMenu}
-					type="button"
-					class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-					id="menu-button"
-					aria-expanded="true"
-					aria-haspopup="true"
+			<div
+				class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+			>
+				<select
+					id="eventCode"
+					bind:value={eventCode}
+					on:change={handleEventCodeChange}
+					class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+					required
 				>
-					Options
-					<svg
-						class="-mr-1 h-5 w-5 text-gray-400"
-						viewBox="0 0 20 20"
-						fill="currentColor"
-						aria-hidden="true"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<option value="" disabled selected>공연코드 선택</option>
+					<option value="PF343804">PF343804</option>
+					<option value="SomeEventCode2"> - </option>
+					<option value="SomeEventCode3"> - </option>
+				</select>
+			</div>
+			{#if selectedImageUrl}
+				<img
+					src={selectedImageUrl}
+					alt="Event Image"
+					class="w-20 h-20 object-cover rounded-lg border border-gray-300"
+				/>
+			{/if}
+		</div>
+	</div>
+	<br />
+
+	<!-- 입력 폼 -->
+	<form on:submit|preventDefault={predictCancellation}>
+		<div class="grid grid-cols-2 gap-4">
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					공연코드
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="text"
+						id="eventCode"
+						bind:value={eventCode}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="공연코드"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					공연일시
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="datetime-local"
+						id="eventDate"
+						bind:value={eventDate}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					평균 할인금액
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="number"
+						id="discountAmount"
+						bind:value={discountAmount}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="평균 할인금액"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					평균 장당금액
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="number"
+						id="pricePerTicket"
+						bind:value={pricePerTicket}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="평균 장당금액"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+			<!-- 남자 인원 입력 필드 -->
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					남자 인원
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="number"
+						id="maleCount"
+						bind:value={gender.maleCount}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="남자 인원"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+
+			<!-- 여자 인원 입력 필드 -->
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					여자 인원
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="number"
+						id="femaleCount"
+						bind:value={gender.femaleCount}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="여자 인원"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+			<!-- 기타 인원 입력 필드 추가 -->
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					기타 인원
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="number"
+						id="otherCount"
+						bind:value={gender.otherCount}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="기타 인원"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+			<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+				<div
+					class="text-[#121212]/90 text-sm font-semibold tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					연령 평균
+				</div>
+				<div
+					class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+				>
+					<input
+						type="number"
+						id="age"
+						bind:value={age}
+						class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+						placeholder="연령 평균"
+						required
+						style="font-family: 'Noto Sans KR', sans-serif;"
+					/>
+				</div>
+			</div>
+		</div>
+		<div class="h-[120px] flex-col justify-center items-center gap-4 inline-flex mt-4">
+			<div
+				class="self-stretch h-14 p-3 bg-[#050a11] rounded-lg justify-center items-center gap-2 inline-flex"
+			>
+				<button
+					type="submit"
+					class="text-white text-lg font-semibold font-['Poppins'] tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					예측하기
 				</button>
 			</div>
 		</div>
+	</form>
 
-		<!-- 드롭다운 메뉴 -->
-		{#if $isOpen}
-			<div
-				class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-				role="menu"
-				aria-orientation="vertical"
-				aria-labelledby="menu-button"
-				tabindex="-1"
-			>
-				<div class="py-1" role="none">
-					<a
-						href="#"
-						class="block px-4 py-2 text-sm text-gray-700"
-						role="menuitem"
-						tabindex="-1"
-						id="menu-item-0">Account settings</a
-					>
-					<a
-						href="#"
-						class="block px-4 py-2 text-sm text-gray-700"
-						role="menuitem"
-						tabindex="-1"
-						id="menu-item-1">Support</a
-					>
-					<a
-						href="#"
-						class="block px-4 py-2 text-sm text-gray-700"
-						role="menuitem"
-						tabindex="-1"
-						id="menu-item-2">License</a
-					>
-					<form method="POST" action="#" role="none">
-						<button
-							type="submit"
-							class="block w-full px-4 py-2 text-left text-sm text-gray-700"
-							role="menuitem"
-							tabindex="-1"
-							id="menu-item-3">Sign out</button
-						>
-					</form>
-				</div>
-			</div>
-		{/if}
-	</div>
-	<!-- Flask 백엔드 메시지 표시 -->
+	<!-- 예측 결과를 표시하는 부분 -->
 	<div class="mt-8">
-		<h2 class="text-xl font-semibold mb-2">Message from Flask Backend:</h2>
-		<p class="text-lg text-gray-700">{flaskMessage}</p>
+		<h2 class="text-xl font-semibold mb-2">취소표 예측결과</h2>
+		<p class="text-lg text-gray-700">
+			{#if predictedCount !== null}
+				{predictedCount}
+			{:else}
+				-
+			{/if}
+		</p>
 	</div>
 </main>
