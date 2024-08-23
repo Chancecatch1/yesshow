@@ -48,8 +48,8 @@
 
 	let eventImages = {
 		PF343804: `https://yesshow.vercel.app/static/images/PF343804.jpeg`,
-		SomeEventCode2: `https://yesshow.vercel.app/static/images/SomeImage2.jpeg`,
-		SomeEventCode3: `https://yesshow.vercel.app/static/images/SomeImage3.jpeg`
+		SomeEventCode2: `https://yesshow.vercel.app/static/images/PF343804.jpeg`,
+		SomeEventCode3: `https://yesshow.vercel.app/static/images/PF343804.jpeg`
 	};
 
 	let selectedImageUrl: string | null = null;

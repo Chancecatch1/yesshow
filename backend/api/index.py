@@ -10,21 +10,20 @@ import os
 
 app = Flask(__name__)
 CORS(app)  # 모든 도메인에서 접근 가능하게 설정
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-db = SQLAlchemy(app)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+# db = SQLAlchemy(app)
 
-# 데이터베이스 모델
-class Prediction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    performanceCode = db.Column(db.String(50))
-    seatCount = db.Column(db.Integer)
-    eventCode = db.Column(db.String(50))
-    eventDate = db.Column(db.String(50))
-    discountAmount = db.Column(db.Float)
-    pricePerTicket = db.Column(db.Float)
-    gender = db.Column(db.String(10))
-    age = db.Column(db.Integer)
-    genre = db.Column(db.String(50))
+# class Prediction(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     performanceCode = db.Column(db.String(50))
+#     seatCount = db.Column(db.Integer)
+#     eventCode = db.Column(db.String(50))
+#     eventDate = db.Column(db.String(50))
+#     discountAmount = db.Column(db.Float)
+#     pricePerTicket = db.Column(db.Float)
+#     gender = db.Column(db.String(10))
+#     age = db.Column(db.Integer)
+#     genre = db.Column(db.String(50))
 
 # # 메시지 반환 엔드포인트
 # @app.route('/api/message', methods=['GET'])
@@ -77,6 +76,6 @@ def get_image(filename):
     return send_from_directory(directory, filename)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all() 
+    # with app.app_context():
+    #     db.create_all() 
     app.run(debug=True)
