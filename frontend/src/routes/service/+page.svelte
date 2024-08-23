@@ -1,7 +1,7 @@
 <!-- frontend/src/routes/service/+page.svelte -->
 
 <script lang="ts">
-	// import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	const API_URL = import.meta.env.VITE_API_URL;
@@ -34,8 +34,8 @@
 	let age = ''; // 연령
 	// 추론된 취소수 값을 저장할 스토어
 	let predictedCancellationCount = writable<number | null>(null);
-	// let flaskMessage: string = ''; // Flask로부터의 메시지 (오류 시 표시)
-	// let message: string = '';
+	let flaskMessage: string = ''; // Flask로부터의 메시지 (오류 시 표시)
+	let message: string = '';
 
 	let predictedCount: number | null;
 	$: predictedCount = $predictedCancellationCount;
@@ -50,20 +50,20 @@
 
 	$: selectedImageUrl = eventCode ? eventImages[eventCode] : null;
 
-	// // Flask 백엔드에서 메시지 가져오기
-	// onMount(async () => {
-	// 	try {
-	// 		const flaskResponse = await fetch(`${API_URL}/message`);
-	// 		if (flaskResponse.ok) {
-	// 			const data = await flaskResponse.json();
-	// 			flaskMessage = data.message;
-	// 		} else {
-	// 			flaskMessage = 'Failed to load message';
-	// 		}
-	// 	} catch (error) {
-	// 		flaskMessage = 'Error: ' + error.message;
-	// 	}
-	// });
+	// Flask 백엔드에서 메시지 가져오기
+	onMount(async () => {
+		try {
+			const flaskResponse = await fetch(`${API_URL}/message`);
+			if (flaskResponse.ok) {
+				const data = await flaskResponse.json();
+				flaskMessage = data.message;
+			} else {
+				flaskMessage = 'Failed to load message';
+			}
+		} catch (error) {
+			flaskMessage = 'Error: ' + error.message;
+		}
+	});
 
 	// 취소수 예측 요청을 보내는 비동기 함수
 	async function predictCancellation() {

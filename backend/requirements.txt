@@ -1,4 +1,5 @@
-# backend/requirements.txt
-
-Flask==3.0.3
-Flask-Cors==4.0.1
+Flask
+Flask-Cors
+Flask-SQLAlchemy
+pandas
+joblib
