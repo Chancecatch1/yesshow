@@ -11,6 +11,9 @@
 			<a href="/about">About</a>
 		</div>
 		<div class="text-center text-[#1e1e1e] text-sm font-normal opacity-50 font-['Outfit']">
+			<a href="/insight">Insight</a>
+		</div>
+		<div class="text-center text-[#1e1e1e] text-sm font-normal opacity-50 font-['Outfit']">
 			<a href="/service">Service</a>
 		</div>
 	</div>

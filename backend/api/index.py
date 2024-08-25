@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from datetime import datetime
 import pandas as pd
@@ -47,13 +47,6 @@ def predict():
     predicted_count = float(model.predict(features_scaled)[0])
 
     return jsonify({"predictedCancellationCount": predicted_count})
-
-# 정적 파일(이미지) 제공 엔드포인트
-@app.route('/static/images/<filename>')
-def get_image(filename):
-    print(f"Request for image: {filename}")
-    directory = os.path.join(app.root_path, '../static/images')
-    return send_from_directory(directory, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

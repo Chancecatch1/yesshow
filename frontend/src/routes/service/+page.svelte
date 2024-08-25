@@ -41,16 +41,10 @@
 	$: predictedCount = $predictedCancellationCount;
 
 	let eventImages = {
-		PF343804: `${API_URL.replace('/api', '')}/static/images/PF343804.jpeg`,
-		SomeEventCode2: `${API_URL.replace('/api', '')}/static/images/SomeImage2.jpeg`,
-		SomeEventCode3: `${API_URL.replace('/api', '')}/static/images/SomeImage3.jpeg`
+		PF343804: '/images/PF343804.jpeg',
+		SomeEventCode2: '/images/PF343804.jpeg',
+		SomeEventCode3: '/images/PF343804.jpeg'
 	};
-
-	// let eventImages = {
-	// 	PF343804: `https://yesshow.vercel.app/static/images/PF343804.jpeg`,
-	// 	SomeEventCode2: `https://yesshow.vercel.app/static/images/PF343804.jpeg`,
-	// 	SomeEventCode3: `https://yesshow.vercel.app/static/images/PF343804.jpeg`
-	// };
 
 	let selectedImageUrl: string | null = null;
 
@@ -117,10 +111,26 @@
 			flaskMessage = 'Error: ' + error.message;
 		}
 	}
+
+	// 입력 필드를 초기화하는 함수
+	function resetFields() {
+		eventCode = '';
+		eventDate = '';
+		discountAmount = '';
+		pricePerTicket = '';
+		gender = {
+			maleCount: 0,
+			femaleCount: 0,
+			otherCount: 0
+		};
+		age = '';
+		predictedCancellationCount.set(null);
+		selectedImageUrl = null;
+	}
 </script>
 
 <main class="w-full max-w-[850px] mx-auto p-4 relative">
-	<h1 class="text-2xl font-bold mb-4">Cancel Tickets Prediction</h1>
+	<h1 class="text-2xl font-bold mb-4">Ticket Cancellation Prediction</h1>
 
 	<div class="mt-8">
 		<h2 class="text-l font-semibold mb-2">공연코드 선택</h2>
@@ -328,10 +338,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="h-[120px] flex-col justify-center items-center gap-4 inline-flex mt-4">
-			<div
-				class="self-stretch h-14 p-3 bg-[#050a11] rounded-lg justify-center items-center gap-2 inline-flex"
-			>
+		<div class="h-[120px] flex justify-start items-center gap-4 mt-4">
+			<div class="h-14 p-3 bg-[#050a11] rounded-lg flex justify-center items-center gap-2">
 				<button
 					type="submit"
 					class="text-white text-lg font-semibold font-['Poppins'] tracking-wide"
@@ -340,18 +348,30 @@
 					예측하기
 				</button>
 			</div>
+			<div class="h-14 p-3 bg-[#d1d5db] rounded-lg flex justify-center items-center gap-2">
+				<button
+					type="button"
+					on:click={resetFields}
+					class="text-black text-lg font-semibold font-['Poppins'] tracking-wide"
+					style="font-family: 'Noto Sans KR', sans-serif;"
+				>
+					다시하기
+				</button>
+			</div>
+			<div class="flex items-center gap-4">
+				<div class="h-14 p-3 bg-white rounded-lg border border-gray-300 flex items-center">
+					<h2 class="text-lg font-semibold">취소표 예측결과</h2>
+				</div>
+				<div class="h-14 p-3 bg-white flex items-center">
+					<p class="text-lg text-gray-700">
+						{#if predictedCount !== null}
+							{predictedCount}
+						{:else}
+							-
+						{/if}
+					</p>
+				</div>
+			</div>
 		</div>
 	</form>
-
-	<!-- 예측 결과를 표시하는 부분 -->
-	<div class="mt-8">
-		<h2 class="text-xl font-semibold mb-2">취소표 예측결과</h2>
-		<p class="text-lg text-gray-700">
-			{#if predictedCount !== null}
-				{predictedCount}
-			{:else}
-				-
-			{/if}
-		</p>
-	</div>
 </main>

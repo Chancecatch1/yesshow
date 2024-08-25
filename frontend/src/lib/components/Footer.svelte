@@ -19,6 +19,9 @@
 			<a href="/about">About</a>
 		</div>
 		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">
+			<a href="/insight">Insight</a>
+		</div>
+		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">
 			<a href="/service">Service</a>
 		</div>
 		<!-- <div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">Get in touch</div>
