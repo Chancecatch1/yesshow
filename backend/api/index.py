@@ -8,23 +8,20 @@ import joblib
 import os
 
 app = Flask(__name__)
-CORS(app)  # 모든 도메인에서 접근 가능하게 설정
+CORS(app)
 
-# 모델 경로 설정
-cancellation_model_path = os.path.join(os.path.dirname(__file__), 'models/xgb_model.joblib')
-cancellation_mms_path = os.path.join(os.path.dirname(__file__), 'models/mms.joblib')
+cancellation_model_path = os.path.join(os.path.dirname(__file__), 'models/XB_343804_c.joblib')
+cancellation_mms_path = os.path.join(os.path.dirname(__file__), 'models/mms_343804_c.joblib')
 
-remaining_seats_model_path = os.path.join(os.path.dirname(__file__), 'models/xgb_model_r.joblib')
-remaining_seats_mms_path = os.path.join(os.path.dirname(__file__), 'models/mms_r.joblib')
+remaining_seats_model_path = os.path.join(os.path.dirname(__file__), 'models/RF_343804_r.joblib')
+remaining_seats_mms_path = os.path.join(os.path.dirname(__file__), 'models/mms_343804_r.joblib')
 
-# 모델과 스케일러 로드
 cancellation_model = joblib.load(cancellation_model_path)
 cancellation_mms = joblib.load(cancellation_mms_path)
 
 remaining_seats_model = joblib.load(remaining_seats_model_path)
 remaining_seats_mms = joblib.load(remaining_seats_mms_path)
 
-# 예측 처리 엔드포인트
 @app.route('/api/predict', methods=['POST'])
 def predict():
     data = request.json
@@ -47,14 +44,30 @@ def predict():
         'Avg_Age': [data['age']],
         'Gender_0_Count': [data['gender']['gender_0']],
         'Gender_1_Count': [data['gender']['gender_1']],
-        'Gender_2_Count': [data['gender']['gender_2']]
+        'Gender_2_Count': [data['gender']['gender_2']],
+        'Payment_Method_Card': [data['paymentDetails']['cardPayment']],
+        'Payment_Method_Other': [data['paymentDetails']['otherPayment']],
+        'Payment_Method_Bank': [data['paymentDetails']['bankTransfer']],
+        'Payment_Method_Multi': [data['paymentDetails']['multiplePayments']],
+        'Payment_Method_Cash': [data['paymentDetails']['cashPayment']],
+        'Discount_Type_InHouse': [data['discountDetails']['selfDiscount']],
+        'Discount_Type_Other': [data['discountDetails']['otherDiscount']]
     })
 
-    # 취소표 예측을 위한 스케일링 및 예측
+    feature_order = [
+        'Year', 'Month', 'Day', 'Hour', 'Minute', 'Weekday',
+        'Avg_Discount', 'Avg_Price', 'Avg_Age',
+        'Gender_0_Count', 'Gender_1_Count', 'Gender_2_Count',
+        'Payment_Method_Card', 'Payment_Method_Other', 'Payment_Method_Bank', 
+        'Payment_Method_Multi', 'Payment_Method_Cash',
+        'Discount_Type_Other', 'Discount_Type_InHouse'
+    ]
+    
+    features = features[feature_order]
+
     cancellation_features_scaled = cancellation_mms.transform(features)
     predicted_count = round(float(cancellation_model.predict(cancellation_features_scaled)[0]), 2)
 
-    # 남은 좌석수 예측을 위한 스케일링 및 예측
     remaining_seats_features_scaled = remaining_seats_mms.transform(features)
     predicted_remaining_seats = round(float(remaining_seats_model.predict(remaining_seats_features_scaled)[0]), 2)
 
