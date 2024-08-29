@@ -3,6 +3,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { fade } from 'svelte/transition';
 
 	const API_URL = import.meta.env.VITE_API_URL;
 
@@ -112,7 +113,11 @@
 		<h1 class="text-2xl font-bold mb-4">Ticket Cancellation Prediction</h1>
 
 		{#if selectedImageUrl}
-			<div class="absolute top-0 left-[400px] w-32 h-32 z-10">
+			<div
+				class="absolute top-0 left-[400px] w-32 h-32 z-10"
+				in:fade={{ duration: 150, delay: 100 }}
+				out:fade={{ duration: 150 }}
+			>
 				<img
 					src={selectedImageUrl}
 					alt="Event Image"
@@ -147,8 +152,11 @@
 	<br />
 
 	{#if eventCode}
-		<!-- Show these containers only when eventCode is selected -->
-		<form on:submit|preventDefault={predictCancellation}>
+		<form
+			on:submit|preventDefault={predictCancellation}
+			in:fade={{ duration: 200 }}
+			out:fade={{ duration: 200 }}
+		>
 			<div class="grid grid-cols-2 gap-4">
 				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
 					<div
