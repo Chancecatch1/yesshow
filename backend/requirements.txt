@@ -2,4 +2,7 @@ Flask
 Flask-Cors
 pandas
 joblib
-# xgboost
+scikit-learn
+
+
+

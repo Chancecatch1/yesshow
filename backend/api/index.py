@@ -1,3 +1,5 @@
+# backend/api/index.py
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from datetime import datetime
@@ -9,10 +11,18 @@ app = Flask(__name__)
 CORS(app)  # 모든 도메인에서 접근 가능하게 설정
 
 # 모델 경로 설정
-model_path = os.path.join(os.path.dirname(__file__), 'models/xgb_model.joblib')
-mms_path = os.path.join(os.path.dirname(__file__), 'models/mms.joblib')
-model = joblib.load(model_path)
-mms = joblib.load(mms_path)
+cancellation_model_path = os.path.join(os.path.dirname(__file__), 'models/xgb_model.joblib')
+cancellation_mms_path = os.path.join(os.path.dirname(__file__), 'models/mms.joblib')
+
+remaining_seats_model_path = os.path.join(os.path.dirname(__file__), 'models/xgb_model_r.joblib')
+remaining_seats_mms_path = os.path.join(os.path.dirname(__file__), 'models/mms_r.joblib')
+
+# 모델과 스케일러 로드
+cancellation_model = joblib.load(cancellation_model_path)
+cancellation_mms = joblib.load(cancellation_mms_path)
+
+remaining_seats_model = joblib.load(remaining_seats_model_path)
+remaining_seats_mms = joblib.load(remaining_seats_mms_path)
 
 # 예측 처리 엔드포인트
 @app.route('/api/predict', methods=['POST'])
@@ -35,18 +45,23 @@ def predict():
         'Avg_Discount': [data['discountAmount']],
         'Avg_Price': [data['pricePerTicket']],
         'Avg_Age': [data['age']],
-        'Gender_0_Count': [data['gender']['otherCount']],
-        'Gender_1_Count': [data['gender']['maleCount']],
-        'Gender_2_Count': [data['gender']['femaleCount']]
+        'Gender_0_Count': [data['gender']['gender_0']],
+        'Gender_1_Count': [data['gender']['gender_1']],
+        'Gender_2_Count': [data['gender']['gender_2']]
     })
 
-    # 스케일링 적용
-    features_scaled = mms.transform(features)
+    # 취소표 예측을 위한 스케일링 및 예측
+    cancellation_features_scaled = cancellation_mms.transform(features)
+    predicted_count = round(float(cancellation_model.predict(cancellation_features_scaled)[0]), 2)
 
-    # 모델을 사용해 예측
-    predicted_count = float(model.predict(features_scaled)[0])
+    # 남은 좌석수 예측을 위한 스케일링 및 예측
+    remaining_seats_features_scaled = remaining_seats_mms.transform(features)
+    predicted_remaining_seats = round(float(remaining_seats_model.predict(remaining_seats_features_scaled)[0]), 2)
 
-    return jsonify({"predictedCancellationCount": predicted_count})
+    return jsonify({
+        "predictedCancellationCount": predicted_count,
+        "predictedRemainingSeats": predicted_remaining_seats
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
