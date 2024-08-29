@@ -9,7 +9,7 @@
 	<div
 		class="right-0 bottom-0 mr-[84px] mb-[24px] absolute text-right text-neutral-600 text-sm font-normal font-['Inter']"
 	>
-		Copyrighted © 2024 MyungJun Lee
+		Copyrighted © 2024 Book so Inc.
 	</div>
 	<div class="w-full mx-auto top-[200px] absolute flex justify-center space-x-8">
 		<div class="text-center text-neutral-600 text-sm font-normal font-['Inter']">

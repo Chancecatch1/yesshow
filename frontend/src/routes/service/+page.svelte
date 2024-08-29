@@ -29,6 +29,17 @@
 		gender_0: 0
 	};
 	let age = '';
+	let paymentDetails = {
+		cardPayment: 0,
+		otherPayment: 0,
+		bankTransfer: 0,
+		multiplePayments: 0,
+		cashPayment: 0
+	};
+	let discountDetails = {
+		otherDiscount: 0,
+		selfDiscount: 0
+	};
 
 	let predictedCancellationCount = writable<number | null>(null);
 	let flaskMessage: string = '';
@@ -67,7 +78,9 @@
 			discountAmount,
 			pricePerTicket,
 			gender,
-			age
+			age,
+			paymentDetails,
+			discountDetails
 		};
 
 		try {
@@ -102,6 +115,17 @@
 			gender_0: 0
 		};
 		age = '';
+		paymentDetails = {
+			cardPayment: 0,
+			otherPayment: 0,
+			bankTransfer: 0,
+			multiplePayments: 0,
+			cashPayment: 0
+		};
+		discountDetails = {
+			otherDiscount: 0,
+			selfDiscount: 0
+		};
 		predictedCancellationCount.set(null);
 		selectedImageUrl = null;
 		predictedRemainingSeats = null;
@@ -110,7 +134,7 @@
 
 <main class="w-full max-w-[850px] mx-auto p-4 relative">
 	<div class="relative">
-		<h1 class="text-2xl font-bold mb-4">Ticket Cancellation Prediction</h1>
+		<h1 class="text-2xl font-bold mb-4">공연 취소 예측 서비스</h1>
 
 		{#if selectedImageUrl}
 			<div
@@ -215,6 +239,7 @@
 							bind:value={discountAmount}
 							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
 							placeholder="평균 할인금액"
+							step="0.01"
 							required
 							style="font-family: 'Noto Sans KR', sans-serif;"
 						/>
@@ -236,6 +261,7 @@
 							bind:value={pricePerTicket}
 							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
 							placeholder="평균 장당금액"
+							step="0.01"
 							required
 							style="font-family: 'Noto Sans KR', sans-serif;"
 						/>
@@ -256,7 +282,8 @@
 							id="gender_1"
 							bind:value={gender.gender_1}
 							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
-							placeholder="남자 인원"
+							placeholder="gender1 인원"
+							step="0.01"
 							required
 							style="font-family: 'Noto Sans KR', sans-serif;"
 						/>
@@ -278,7 +305,8 @@
 							id="gender_2"
 							bind:value={gender.gender_2}
 							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
-							placeholder="여자 인원"
+							placeholder="gender2 인원"
+							step="0.01"
 							required
 							style="font-family: 'Noto Sans KR', sans-serif;"
 						/>
@@ -299,7 +327,8 @@
 							id="gender_0"
 							bind:value={gender.gender_0}
 							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
-							placeholder="기타 인원"
+							placeholder="gender0 인원"
+							step="0.01"
 							required
 							style="font-family: 'Noto Sans KR', sans-serif;"
 						/>
@@ -321,6 +350,126 @@
 							bind:value={age}
 							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
 							placeholder="연령 평균"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">카드 결제 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="cardPayment"
+							bind:value={paymentDetails.cardPayment}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="카드 결제 인원"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">기타 결제 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="otherPayment"
+							bind:value={paymentDetails.otherPayment}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="기타 결제 인원"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">무통장 결제 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="bankTransfer"
+							bind:value={paymentDetails.bankTransfer}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="무통장 결제 인원"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">다중 결제 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="multiplePayments"
+							bind:value={paymentDetails.multiplePayments}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="다중 결제 인원"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">현금 결제 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="cashPayment"
+							bind:value={paymentDetails.cashPayment}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="현금 결제 인원"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">기타 할인 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="otherDiscount"
+							bind:value={discountDetails.otherDiscount}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="기타 할인 인원"
+							step="0.01"
+							required
+							style="font-family: 'Noto Sans KR', sans-serif;"
+						/>
+					</div>
+				</div>
+				<div class="h-[77px] flex-col justify-start items-start gap-2 inline-flex">
+					<div class="text-[#121212]/90 text-sm font-semibold tracking-wide">자체 할인 인원</div>
+					<div
+						class="w-[328px] h-12 pl-4 pr-2 py-2 bg-white rounded-lg border border-[#121212]/10 justify-start items-center gap-2 inline-flex"
+					>
+						<input
+							type="number"
+							id="selfDiscount"
+							bind:value={discountDetails.selfDiscount}
+							class="w-full text-[#121212]/40 text-sm font-normal tracking-wide bg-transparent border-none focus:outline-none"
+							placeholder="자체 할인 인원"
+							step="0.01"
 							required
 							style="font-family: 'Noto Sans KR', sans-serif;"
 						/>
@@ -378,19 +527,23 @@
 			</div>
 			<br />
 			<div class="mt-8 text-center">
-				{#if selectedImageUrl}
-					<div class="h-auto inline-block">
-						<img
-							src="/images/pf343804_probability.png"
-							alt="Probability Image"
-							class="object-contain rounded-lg border border-gray-300"
-						/>
-					</div>
-					<div
-						class="text-[#121212]/90 text-l font-semibold tracking-wide mt-2"
-						style="font-family: 'Noto Sans KR', sans-serif;"
-					>
-						시간에 따른 취소 확률
+				{#if predictedRemainingSeats !== null}
+					<div class="mt-8 text-center">
+						{#if selectedImageUrl}
+							<div class="h-auto inline-block">
+								<img
+									src="/images/pf343804_probability.png"
+									alt="Probability Image"
+									class="object-contain rounded-lg border border-gray-300"
+								/>
+							</div>
+							<div
+								class="text-[#121212]/90 text-l font-semibold tracking-wide mt-2"
+								style="font-family: 'Noto Sans KR', sans-serif;"
+							>
+								시간에 따른 취소 확률
+							</div>
+						{/if}
 					</div>
 				{/if}
 			</div>
